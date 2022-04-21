@@ -1,12 +1,12 @@
 #!/bin/bash
-if [ ! -d "/data/ego/video_imgs"  ];then
-	mkdir "/data/ego/video_imgs"
+if [ ! -d "data/ego/video_imgs"  ];then
+	mkdir "data/ego/video_imgs"
 fi
-for file in `ls /data/ego/videos/*`
+for file in `ls data/ego/videos/*`
 do
 	name=$(basename $file .mp4)
 	echo "$name"
-	PTHH=/data/ego/video_imgs/$name
+	PTHH=data/ego/video_imgs/$name
 	if [ ! -d "$PTHH"  ];then
 		mkdir "$PTHH"
 	fi
