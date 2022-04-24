@@ -4,6 +4,7 @@ import torchvision.transforms as transforms
 import numpy as np
 from scipy.interpolate import interp1d
 from collections import defaultdict, OrderedDict
+from PIL import Image
 
 
 logger = logging.getLogger(__name__)
@@ -167,15 +168,22 @@ class ImagerLoader(torch.utils.data.Dataset):
     def __getitem__(self, index):
         source_video = self._get_video(index)
         target = self._get_target(index)
+        # print(self.transform)
+        #weight = target.sum(dim=(0,1))/target.shape[0]
         return source_video, target
 
     def __len__(self):
         return len(self.kframes)
+    
+    def __flip(self, img):
+        return img.transpose(Image.FLIP_LEFT_RIGHT)
+        
 
     def _get_video(self, index, debug=False):
         uid, trackid, frameid, _, label = self.imgs[self.kframes[index]]
         video = []
         need_pad = False
+        self.scale = 0.2*np.random.uniform()
         for i in range(frameid-3, frameid+4):
 
             img = f'{self.source_path}/{uid}/img_{i:05d}.jpg'
@@ -190,10 +198,17 @@ class ImagerLoader(torch.utils.data.Dataset):
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             
             bbox = self.img_group[uid][trackid][i]
-            x1 = int((1.0 - self.scale) * bbox[0])
-            y1 = int((1.0 - self.scale) * bbox[1])
-            x2 = int((1.0 + self.scale) * bbox[2])
-            y2 = int((1.0 + self.scale) * bbox[3])
+            # x1 = int((1.0 - self.scale) * bbox[0])
+            # y1 = int((1.0 - self.scale) * bbox[1])
+            # x2 = int((1.0 + self.scale) * bbox[2])
+            # y2 = int((1.0 + self.scale) * bbox[3])
+            # 1920 1080
+            x1 = max(int(bbox[0]-self.scale*(bbox[2]-bbox[0])), 0)
+            # print(x1)
+            y1 = max(int(bbox[1]-self.scale*(bbox[3]-bbox[1])), 0)
+            x2 = min(int(bbox[2]+self.scale*(bbox[2]-bbox[0])), 1920-1)
+            y2 = min(int(bbox[3]+self.scale*(bbox[3]-bbox[1])), 1080-1)
+            
             face = img[y1: y2, x1: x2, :]
             try:
                 face = cv2.resize(face, (224, 224))
@@ -214,7 +229,22 @@ class ImagerLoader(torch.utils.data.Dataset):
             video = pad_video(video)
 
         if self.transform:
-            video = torch.cat([self.transform(f).unsqueeze(0) for f in video], dim=0)
+            transform = self.transform.copy()
+            if self.mode=='train':
+                alpha = np.random.uniform()
+                if alpha>0.5:
+                    transform.append(transforms.RandomHorizontalFlip(p=1))
+                beta = np.random.uniform()
+                if beta>0.5:
+                    transform.append(transforms.ColorJitter(brightness = 0.2, contrast=0.2, saturation = 0.2))
+                gamma = np.random.uniform()
+                if gamma<0.5:
+                    # print(gamma)
+                    k = int(224*gamma*1.2)
+                    transform.append(transforms.GaussianBlur(kernel_size = max(k-k%2-1, 1), sigma=(0.1, 5)))
+            
+            transform = transforms.Compose(transform)
+            video = torch.cat([transform(f).unsqueeze(0) for f in video], dim=0)
             # video = video.view(21,224,224)
 
         return video.type(torch.float32)

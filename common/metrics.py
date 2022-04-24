@@ -111,6 +111,8 @@ def merge_groundtruth_and_predictions(df_groundtruth, df_predictions):
         raise ValueError(
             "Predictions CSV must contain only SPEAKING_AUDIBLE label.")
 
+    print(df_predictions["score"].count())
+    print(df_predictions["uid"].count())
     if df_predictions["score"].count() < df_predictions["uid"].count():
         raise ValueError("Predictions CSV must contain score value for every row.")
 
@@ -276,4 +278,4 @@ def main():
 
 if __name__ == "__main__":
     main()
-    # run_evaluation('output/result/gt.csv', 'output/result/pred.csv')
+    # run_evaluation('output_weighted/result/gt.csv', 'output_weighted/result/pred.csv')
