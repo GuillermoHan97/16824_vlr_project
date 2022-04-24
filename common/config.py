@@ -13,7 +13,7 @@ argparser.add_argument('--val_stride', type=int, default=13, help='Validation su
 argparser.add_argument('--test_stride', type=int, default=1, help='Test subsampling rate')
 argparser.add_argument('--epochs', type=int, default=20, help='Maximum epoch')
 argparser.add_argument('--batch_size', type=int, default=128, help='Batch size')
-argparser.add_argument('--num_workers', type=int, default=5, help='Num workers')
+argparser.add_argument('--num_workers', type=int, default=10, help='Num workers')
 argparser.add_argument('--lr', type=float, default=5e-4, help='Learning rate')
 # argparser.add_argument('--weights', type=list, default=[0.136, 0.864], help='Class weight')
 # argparser.add_argument('--weights', type=list, default=[0.05, 0.95], help='Class weight')
@@ -30,3 +30,4 @@ argparser.add_argument('--backend', type=str, default='nccl', help='Distributed 
 argparser.add_argument('--exp_path', type=str, default='output', help='Path to results')
 argparser.add_argument('--checkpoint', type=str, help='Checkpoint to load')
 argparser.add_argument('--dropout', action='store_true', help='dropout or not')
+argparser.add_argument('--mixup', action='store_true', help='mixup or not')

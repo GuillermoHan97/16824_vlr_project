@@ -148,7 +148,7 @@ def make_dataset(file_name, json_path, gt_path, stride=1):
 
 class ImagerLoader(torch.utils.data.Dataset):
     def __init__(self, source_path, file_name, json_path, gt_path, 
-                 stride=1, scale=0, mode='train', transform=None):
+                 stride=1, scale=0, mode='train', transform=None, mixup=False):
 
         self.source_path = source_path
         assert os.path.exists(self.source_path), 'source path not exist'
@@ -164,10 +164,29 @@ class ImagerLoader(torch.utils.data.Dataset):
         self.scale = scale #box expand ratio
         self.mode = mode
         self.transform = transform
+        self.mixup = mixup
 
     def __getitem__(self, index):
         source_video = self._get_video(index)
         target = self._get_target(index)
+        # print(source_video.shape)
+        if self.mixup:
+            p = np.random.randint(len(self.kframes))
+            alpha = 0.2
+            lam = np.random.beta(alpha, alpha)
+            key = self._get_target(p)
+            if key[0]==1:
+                v1 = self._get_video(p)
+                source_video = lam*source_video + (1-lam)*v1
+                target = lam*target + (1-lam)*key
+            else:
+                r = np.random.uniform()
+                if r<0.05:
+                    v1 = self._get_video(p)
+                    source_video = lam*source_video + (1-lam)*v1
+                    target = lam*target + (1-lam)*key
+        
+        # print(index)
         # print(self.transform)
         #weight = target.sum(dim=(0,1))/target.shape[0]
         return source_video, target

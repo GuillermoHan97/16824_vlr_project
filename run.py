@@ -48,7 +48,7 @@ def main(args):
 
     if not args.eval:
         train_dataset = ImagerLoader(args.source_path, args.train_file, args.json_path, 
-                                    args.gt_path, stride=args.train_stride, transform=get_transform(True))
+                                    args.gt_path, stride=args.train_stride, transform=get_transform(True), mixup=args.mixup)
 
         val_dataset = ImagerLoader(args.source_path, args.val_file, args.json_path, args.gt_path, 
                                 stride=args.val_stride, mode='val', transform=get_transform(False))
