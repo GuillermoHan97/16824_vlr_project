@@ -178,7 +178,25 @@ videos because they usually involve rapid scene change, object distortion and li
 
                     Both fixed weight Or dynamic weight can improve the performance. The weight 0.05 is actually very close to the percentage of looking at me annotation in the data.
 
+                    <div class="image" style="padding: 2em 0 0.5em 0">
+                        <table border="0" width='100%' style="FONT-SIZE:15" >
+                         <tr align="center">
+                            <td width="80%"><img src="DPS/figures/weight_loss_res.png" alt="" width="100%" ></td>
+                         </tr>
+                         </table>
+                          <p style="text-align: justify">Figure 6. Weighted loss results.</p>
+                    </div>
+
                     <h3>Data Augmentation and Dropout Result</h3>
+
+                    <div class="image" style="padding: 2em 0 0.5em 0">
+                        <table border="0" width='100%' style="FONT-SIZE:15" >
+                         <tr align="center">
+                            <td width="80%"><img src="DPS/figures/data_aug_res.png" alt="" width="100%" ></td>
+                         </tr>
+                         </table>
+                          <p style="text-align: justify">Figure 7. Data augmentation results.</p>
+                    </div>
 
 
                     To sum up, the data is actually very noisy.
@@ -194,7 +212,7 @@ videos because they usually involve rapid scene change, object distortion and li
                             <td width="80%"><img src="DPS/figures/noisy.jpg" alt="" width="40%" ></td>
                          </tr>
                          </table>
-                          <p style="text-align: justify">Figure 6. Noisy data with unstable face bounding box.</p>
+                          <p style="text-align: justify">Figure 8. Noisy data with unstable face bounding box.</p>
                       </div>
 
                     So the improvement is not that big.
@@ -208,8 +226,8 @@ videos because they usually involve rapid scene change, object distortion and li
                             <td width="80%"><img src="DPS/figures/trans_res.png" alt="" width="100%" ></td>
                          </tr>
                          </table>
-                          <p style="text-align: justify">Figure 7. Transformer results.</p>
-                  </div>
+                          <p style="text-align: justify">Figure 9. Transformer results.</p>
+                    </div>
                   We first tried using transformer without pretrained weights, as we can see, this method had a worse performance in some metrics compared with Baseline, probably because Transformer is extremely hungry for high-quality data,
                   while in this dataset, we have limited access to high-quality and well-balanced data.
                   We also tried to finetune a Transformer model pretrained on other dataset, and as we can see, it can do better prediction because it is able to capture critical region in the image.
@@ -223,8 +241,13 @@ videos because they usually involve rapid scene change, object distortion and li
             <h2>Conclusion</h2>
             <div class='desp'>
                 <p style="text-align:justify">
-                abc
-                 </p>
+                We selected the recently published dataset Ego4d which consists of egocentric videos and focused on the social interaction track, specifically the task of judging whether there are people looking at the camera at the current frame. 
+                Based on the Gaze360 baseline, we first analyzed the dataset itself, noticed the problem of extreme imbalance thus tried weighted loss and more reasonable metrics. Data augmentation was also performed to alleviate the data imbalance problem.
+                Experimental results show that by adding weighted loss, using new metrics and performing data augmentation, there are significant performance improvements over the baseline. 
+
+                With the idea that for social interaction analysis, some regions such as eyes are more important than others so it would be a good idea to introduce attention mechanism. We used ViT structure in our model, which is supposed to focus on the eye 
+                area of each frame. The experimental results proved that our proposed model with ViT structure outperformed the baseline with a large gap no matter whether with or without pretraining.
+                </p>
             </div>
         </div>
 
