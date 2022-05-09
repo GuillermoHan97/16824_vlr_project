@@ -4,6 +4,10 @@ import torch.optim
 import torch.utils.data
 from torch.nn.init import normal, constant
 from model.resnet import resnet18
+# from resnet import resnet18 # used if run this script independently
+# from vit_pytorch import ViT
+import timm
+import torchvision
 
 
 logger = logging.getLogger(__name__)
@@ -25,7 +29,7 @@ class BaselineLSTM(nn.Module):
         
         self._init_parameters()
         
-        self.load_checkpoint()
+        # self.load_checkpoint()
 
     def forward(self, input):
         N, D, C, H, W = input.shape
@@ -95,8 +99,46 @@ class GazeLSTM(nn.Module):
                     state_dict.pop('last_layer.bias')
                 self.load_state_dict(state_dict, strict=self.args.eval)
 
+class ViT(nn.Module):
+    # implementation of vision transformer
+    def __init__(self, args):
+        super(ViT, self).__init__()
+        self.args = args
+        # self.model = ViT(
+        #     image_size = 256,
+        #     patch_size = 32,
+        #     num_classes = 2, # LAM or not
+        #     dim = 1024,
+        #     depth = 6,
+        #     heads = 16,
+        #     mlp_dim = 2048,
+        #     dropout = 0.1,
+        #     emb_dropout = 0.1
+        # )
+        if self.args.pretrained:
+            self.model = timm.create_model('vit_base_patch16_224', pretrained=True, num_classes=2)
+            print("using pretrained ViT...")
+        else:
+            self.model = timm.create_model('vit_base_patch16_224', num_classes=2)
+            print("using non-pretrained ViT...")
+
+    def forward(self, input):
+        # input is consecutive 7 frames: batch x 7 x 3 x img_size x img_size
+        # only use key frame as input
+        input = input[:, 3]
+        preds = self.model(input)
+
+        return preds
+
+    def load_checkpoint(self):
+        if self.args.checkpoint is not None:
+            if os.path.exists(self.args.checkpoint):
+                logger.info(f'loading checkpoint {self.args.checkpoint}')
 
 if __name__ == '__main__':
-    input_test = torch.FloatTensor(4,21,224,224)
-    model_test = BaselineLSTM()
-    out = model_test.forward(input_test)
+    input_test = torch.FloatTensor(4,7,3,224,224) # 21 = 7 * 3
+    model_test1 = BaselineLSTM({})
+    model_test2 = ViT({})
+    out1 = model_test1.forward(input_test)
+    out2 = model_test2.forward(input_test)
+    print("test.")
