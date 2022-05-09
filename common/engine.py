@@ -6,7 +6,8 @@ import torch.utils.data
 from common.utils import AverageMeter
 from common.distributed import is_master
 import torch.nn.functional as F
-
+import cv2
+import torchvision
 
 logger = logging.getLogger(__name__)
 
@@ -25,6 +26,24 @@ def train(train_loader, model, criterion, optimizer, epoch):
     for i,  (source_frame, target) in enumerate(train_loader):
         
         # print('i',i)
+        # print(source_frame.size())
+        # print(target)
+        
+        # torchvision.utils.save_image(source_frame[:,3,:,:], 'source.png')
+        
+        
+        # video=cv2.VideoWriter('loaded.avi',-1,1,(224,224))
+
+        # for j in range(source_frame.size()[1]):
+        #     video.write(source_frame[0,j,:,:,:].permute(1, 2, 0).numpy()*255)
+ 
+        # video.release()
+        
+        # exit()
+        
+        # b = source_frame.shape[0]
+        # rp1 = torch.randperm(b)
+        # sf1 = 
 
         # measure data loading time
         data_time.update(time.time() - end)
@@ -33,20 +52,22 @@ def train(train_loader, model, criterion, optimizer, epoch):
 
         # compute output
         output = model(source_frame)
-
+ 
         # from common.render import visualize_gaze
         # for i in range(32):
         #     visualize_gaze(source_frame, output[0], index=i, title=str(i))
 
         # print(target.shape)
         # weight = target.sum()/target.shape[0]
-        # weight = weight.item()
-        # if weight==0:
-        #     weight=0.05
+        weight = target[:,1].sum()/target.sum()
+        weight = weight.item()
+        # print(weight)
+        if weight==0:
+            weight=0.05
         
-        # criterion1 = torch.nn.CrossEntropyLoss(weight=torch.FloatTensor([weight, 1-weight]).cuda())
+        criterion1 = torch.nn.CrossEntropyLoss(weight=torch.FloatTensor([weight, 1-weight]).cuda())
         target = target.squeeze(1)
-        loss = criterion(output, target)
+        loss = criterion1(output, target)
         # output = F.softmax(output, dim=-1)
         # for idx, scores in enumerate(output):
         #     print(scores[1].item())

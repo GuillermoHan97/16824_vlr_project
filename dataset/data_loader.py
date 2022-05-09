@@ -175,16 +175,21 @@ class ImagerLoader(torch.utils.data.Dataset):
             alpha = 0.2
             lam = np.random.beta(alpha, alpha)
             key = self._get_target(p)
-            if key[0]==1:
+            if key[0]==1 and target[0]==0:
                 v1 = self._get_video(p)
                 source_video = lam*source_video + (1-lam)*v1
-                target = lam*target + (1-lam)*key
+                t = lam*target + (1-lam)*key
+                return source_video, torch.FloatTensor([lam, 1-lam])
+            # else:
+            #     r = np.random.uniform()
+            #     if r<0.05:
+            #         v1 = self._get_video(p)
+            #         source_video = lam*source_video + (1-lam)*v1
+            #         t = lam*target + (1-lam)*key
+            if target[0]==0:
+                return source_video, torch.FloatTensor([1, 0])
             else:
-                r = np.random.uniform()
-                if r<0.05:
-                    v1 = self._get_video(p)
-                    source_video = lam*source_video + (1-lam)*v1
-                    target = lam*target + (1-lam)*key
+                return source_video, torch.FloatTensor([0, 1])
         
         # print(index)
         # print(self.transform)
@@ -214,7 +219,7 @@ class ImagerLoader(torch.utils.data.Dataset):
             
             assert os.path.exists(img), f'img: {img} not found'
             img = cv2.imread(img)
-            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             
             bbox = self.img_group[uid][trackid][i]
             # x1 = int((1.0 - self.scale) * bbox[0])
@@ -228,6 +233,10 @@ class ImagerLoader(torch.utils.data.Dataset):
             x2 = min(int(bbox[2]+self.scale*(bbox[2]-bbox[0])), 1920-1)
             y2 = min(int(bbox[3]+self.scale*(bbox[3]-bbox[1])), 1080-1)
             
+            img = cv2.rectangle(img, (y1,x1), (y2,x2),(0,0,255),12)
+            if index==2 and i==frameid:
+                cv2.imwrite('noisy1.jpg', img)
+            # exit()
             face = img[y1: y2, x1: x2, :]
             try:
                 face = cv2.resize(face, (224, 224))
@@ -255,11 +264,11 @@ class ImagerLoader(torch.utils.data.Dataset):
                     transform.append(transforms.RandomHorizontalFlip(p=1))
                 beta = np.random.uniform()
                 if beta>0.5:
-                    transform.append(transforms.ColorJitter(brightness = 0.2, contrast=0.2, saturation = 0.2))
+                    transform.append(transforms.ColorJitter(brightness = 0.1, contrast=0.1, saturation = 0.1))
                 gamma = np.random.uniform()
                 if gamma<0.5:
                     # print(gamma)
-                    k = int(224*gamma*1.2)
+                    k = int(224*gamma*0.6)
                     transform.append(transforms.GaussianBlur(kernel_size = max(k-k%2-1, 1), sigma=(0.1, 5)))
             
             transform = transforms.Compose(transform)
@@ -271,7 +280,7 @@ class ImagerLoader(torch.utils.data.Dataset):
     def _get_target(self, index):
         if self.mode == 'train':
             label = self.imgs[self.kframes[index]][-1]
-            return torch.LongTensor([label])
+            return torch.FloatTensor([label])
         else:
             return self.imgs[self.kframes[index]]
 
