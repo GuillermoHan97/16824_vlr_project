@@ -114,20 +114,15 @@ videos because they usually involve rapid scene change, object distortion and li
 
                   Instead of the whole big dataset, we actually select a subset for training and evaluating.
 
-                  First we try to apply the weighted loss. We implement it in 2ways:
-                  <br>
+                  First we try to apply the weighted loss. We implement it in 2 ways:
                     1. Find the best fixed weight
-                    <br>
                     2. Caculate the weight based on the training data batch
 
                     <br>
-                    Also We design different evaluation metrics.
+                    Also we design different evaluation metrics.
                     Since though baseline has high accuracy, it predicts all data as not looking at me
-
                     These metrics can balance the accuracy contributed from different classes.
-                    <br>
-                    Also we tried some basic data augmentation, mixup as well as dropout.
-                      <br>
+                    We tried some basic data augmentation, mixup as well as dropout too.
                     Different from the original mixup, we will mix with the looking at me class more frequently.
                     And we adjust the loss weight based on the mixup result.
 
@@ -176,7 +171,7 @@ videos because they usually involve rapid scene change, object distortion and li
                 <p style="text-align:justify">
                     <h3>Weighted Loss Result</h3>
 
-                    Both fixed weight Or dynamic weight can improve the performance. The weight 0.05 is actually very close to the percentage of looking at me annotation in the data.
+                    Both fixed weight or dynamic weight can improve the performance. The weight 0.05 is actually very close to the percentage of looking at me annotation in the data.
 
                     <div class="image" style="padding: 2em 0 0.5em 0">
                         <table border="0" width='100%' style="FONT-SIZE:15" >
@@ -188,7 +183,6 @@ videos because they usually involve rapid scene change, object distortion and li
                     </div>
 
                     <h3>Data Augmentation and Dropout Result</h3>
-
                     <div class="image" style="padding: 2em 0 0.5em 0">
                         <table border="0" width='100%' style="FONT-SIZE:15" >
                          <tr align="center">
@@ -198,12 +192,9 @@ videos because they usually involve rapid scene change, object distortion and li
                           <p style="text-align: justify">Figure 7. Data augmentation results.</p>
                     </div>
 
-
                     To sum up, the data is actually very noisy.
-                    <br>
                     Since the quality of image is not good.
                     And also the motion is big since it's ego video.
-
                     The bounding box for faces are very unstable as in the below figure.
 
                     <div class="image" style="padding: 2em 0 0.5em 0">
