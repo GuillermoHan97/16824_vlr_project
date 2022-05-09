@@ -12,3 +12,5 @@ python run.py --exp_path path
 drop out using --dropout
 using dynamic weight now
 mixup using --mixup
+
+check brunch xuhua for the transformer implement
