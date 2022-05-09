@@ -19,6 +19,8 @@ class BaselineLSTM(nn.Module):
         self.lstm = nn.LSTM(self.img_feature_dim, self.img_feature_dim, bidirectional=True, num_layers=2, batch_first=True)
         self.last_layer1 = nn.Linear(2*self.img_feature_dim, 128)
         self.last_layer2 = nn.Linear(128, 2)
+        self.flag = args.dropout
+        self.dropout = nn.Dropout(0.5)
 
         for param in self.parameters():
             param.requires_grad = True
@@ -34,7 +36,11 @@ class BaselineLSTM(nn.Module):
         lstm_out, _ = self.lstm(base_out)
         lstm_out = lstm_out[:,3,:]
         output = self.last_layer1(lstm_out)
+        if self.flag:
+            output = self.dropout(output)
         output = self.last_layer2(output)
+        if self.flag:
+            output = self.dropout(output)
         return output
 
     def load_checkpoint(self):
