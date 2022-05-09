@@ -64,7 +64,7 @@ videos because they usually involve rapid scene change, object distortion and li
         </div>
 
         <div class="our_sec">
-            <h2>Our idea</h2>
+            <h2>Our Ideas</h2>
             <div class='desp'>
                 <p style="text-align:justify">
                 <h3>Data Imbalance Problem</h3>
@@ -102,9 +102,41 @@ videos because they usually involve rapid scene change, object distortion and li
                     And we adjust the loss weight based on the mixup result.
 
                 <p style="text-align:justify">
-                <h3>Transformer</h3>
+                <h3>More Reasonable Metrics</h3>
                  </p>
+                 According to our anaysis on this dataset, we notice that it is seriously imbalanced so even if the Baseline
+                 predicts ALL data as "not looking at me", it still achieves very high accuracy because most of the GT annotations are "not looking at me".
+                 Therefore, we proposed 4 more reasonable metrics, which can be viewed as "weighted accuracy" aiming to balance the accuracy contributed from different classes.
+                 All these metrics are shown in Figure 3.
+                 <div class="image" style="padding: 2em 0 0.5em 0">
+                    <table border="0" width='100%' style="FONT-SIZE:15" >
+                     <tr align="center">
+                        <td width="80%"><img src="DPS/figures/metrics.png" alt="" width="40%" ></td>
+                     </tr>
+                     </table>
+                      <p style="text-align: justify">Figure 2. Percentage of frames that has looking at me annotations [1].</p>
+                  </div>
 
+                <p style="text-align:justify">
+                <h3>Transformer</h3>
+                Transformer is a novel deep learning architecture that adopts the self-attention mechanism, and trying to learn
+                an adaptive weighting system to capture the significance of each part of the input data. In our task, it is especially
+                helpful to focus on the gaze located around eye region, which can provide a useful clue for our model to learn "looking at me".
+                Therefore, we decide to adapt a recently proposed technique named Vision Transformer [2] to our task.
+
+                As a brief introduction, ViT will divide the input image into multiple patches and then for each patch it will extract a feature vector,
+                and pass through the Transformer architecture, then followed by a MLP head to generate classification results. In our setting, the input image
+                will become the face region of different persons interacting with camera wearer, and the output of MLP head will be a binary boolean label deciding
+                whether the person is looking at me or not. Our experiment results proved that Transformer is good at attending to important regions for our task.
+                 </p>
+                 <div class="image" style="padding: 2em 0 0.5em 0">
+                    <table border="0" width='100%' style="FONT-SIZE:15" >
+                     <tr align="center">
+                        <td width="80%"><img src="DPS/figures/vit.png" alt="" width="80%" ></td>
+                     </tr>
+                     </table>
+                      <p style="text-align: justify">Figure 3. Vision Transformer architecture [2].</p>
+                  </div>
             </div>
         </div>
 
@@ -114,9 +146,44 @@ videos because they usually involve rapid scene change, object distortion and li
                 <p style="text-align:justify">
                     <h3>Weighted Loss Result</h3>
 
+                    Both fixed weight Or dynamic weight can improve the performance. The weight 0.05 is actually very close to the percentage of looking at me annotation in the data.
+
                     <h3>Data Augmentation and Dropout Result</h3>
 
-                    <h3>Transformer</h3>
+
+                    To sum up, the data is actually very noisy.
+                    <br>
+                    Since the quality of image is not good.
+                    And also the motion is big since it's ego video.
+
+                    The bounding box for faces are very unstable as in the below figure.
+
+                    <div class="image" style="padding: 2em 0 0.5em 0">
+                        <table border="0" width='100%' style="FONT-SIZE:15" >
+                         <tr align="center">
+                            <td width="80%"><img src="DPS/figures/noisy.jpg" alt="" width="40%" ></td>
+                         </tr>
+                         </table>
+                          <p style="text-align: justify">Figure 4. Noisy data with unstable face bounding box.</p>
+                      </div>
+
+                    So the improvement is not that big.
+                    <br>
+                    For dropout, it is actually very unstable for the imbalance task
+
+                    <h3>Transformer Result</h3>
+                    <div class="image" style="padding: 2em 0 0.5em 0">
+                        <table border="0" width='100%' style="FONT-SIZE:15" >
+                         <tr align="center">
+                            <td width="80%"><img src="DPS/figures/trans_res.png" alt="" width="100%" ></td>
+                         </tr>
+                         </table>
+                          <p style="text-align: justify">Figure 5. Transformer results.</p>
+                  </div>
+                  We first tried using transformer without pretrained weights, as we can see, this method had a worse performance in some metrics compared with Baseline, probably because Transformer is extremely hungry for high-quality data,
+                  while in this dataset, we have limited access to high-quality and well-balanced data.
+                  We also tried to finetune a Transformer model pretrained on other dataset, and as we can see, it can do better prediction because it is able to capture critical region in the image.
+
                  </p>
             </div>
         </div>
@@ -143,7 +210,8 @@ videos because they usually involve rapid scene change, object distortion and li
         <div class="reference_sec">
         <h2>Reference</h2>
           <div class="bib" style="text-align: justify">
-            <p>[1] K. Grauman, etc. Ego4d: Around the World in 3000 Hours of Egocentric Video. CoRR 2021.</p>
+            <p>[1] K. Grauman, et al. "Ego4d: Around the World in 3000 Hours of Egocentric Video." CVPR 2022.</p>
+            <p>[2] Alexey Dosovitskiy, et al. "An Image is worth 16x16 words: Transformers  for  image recognition at scale" ICLR 2021.</p>
           </div>
         </div>
 
