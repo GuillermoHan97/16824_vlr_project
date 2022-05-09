@@ -67,8 +67,40 @@ videos because they usually involve rapid scene change, object distortion and li
 			<h2>Our idea</h2>
 			<div class='desp'>
 				<p style="text-align:justify">
-				abc
+				<h3>Data Imbalance Problem</h3>
 				 </p>
+				 By analyzing the data, we find out that we are facing an imbalance problem.
+				 Below is the figure of percentage of frames that has looking at me annotations. 
+				 Over 95% of data is not looking at me
+
+				 <div class="image" style="padding: 2em 0 0.5em 0">
+					<table border="0" width='100%' style="FONT-SIZE:15" >
+					 <tr align="center">
+						<td width="80%"><img src="DPS/figures/imbalance.png" alt="" width="40%" ></td>
+					 </tr>
+					 </table>							 
+					  <p style="text-align: justify">Figure 2. Percentage of frames that has looking at me annotations [1].</p>
+				  </div>
+
+				  Instead of the whole big dataset, we actually select a subset for training and evaluating.
+
+				  First we try to apply the weighted loss. We implement it in 2ways:
+				  <br>
+					1. Find the best fixed weight
+					<br>
+					2. Caculate the weight based on the training data batch
+
+					<br>
+					Also We design different evaluation metrics.
+					Since though baseline has high accuracy, it predicts all data as not looking at me
+
+					These metrics can balance the accuracy contributed from different classes.
+					<br>
+					Also we tried some basic data augmentation, mixup as well as dropout.
+
+					Different from the original mixup, we will mix with the looking at me class more frequently.
+					And we adjust the loss weight based on the mixup result.
+
 			</div>
 		</div>
 
@@ -76,7 +108,11 @@ videos because they usually involve rapid scene change, object distortion and li
 			<h2>Experimental Results</h2>
 			<div class='desp'>
 				<p style="text-align:justify">
-				abc
+					<h3>Weighted Loss Result</h3>
+
+					<h3>Data Augmentation and Dropout Result</h3>
+
+					
 				 </p>
 			</div>
 		</div>
