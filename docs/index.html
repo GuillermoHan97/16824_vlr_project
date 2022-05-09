@@ -110,7 +110,30 @@ videos because they usually involve rapid scene change, object distortion and li
 				<p style="text-align:justify">
 					<h3>Weighted Loss Result</h3>
 
+					Both fixed weight Or dynamic weight can improve the performance. The weight 0.05 is actually very close to the percentage of looking at me annotation in the data.
+
 					<h3>Data Augmentation and Dropout Result</h3>
+
+
+					To sum up, the data is actually very noisy.
+					<br>
+					Since the quality of image is not good.
+					And also the motion is big since it's ego video.
+
+					The bounding box for faces are very unstable as in the below figure.
+
+					<div class="image" style="padding: 2em 0 0.5em 0">
+						<table border="0" width='100%' style="FONT-SIZE:15" >
+						 <tr align="center">
+							<td width="80%"><img src="DPS/figures/noisy.jpg" alt="" width="40%" ></td>
+						 </tr>
+						 </table>							 
+						  <p style="text-align: justify">Figure 3. Noisy data with unstable face bounding box.</p>
+					  </div>
+
+					So the improvement is not that big.
+					<br>
+					For dropout, it is actually very unstable for the imbalance task
 
 					
 				 </p>
