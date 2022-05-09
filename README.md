@@ -9,4 +9,6 @@ python scripts/preprocessing.py
 
 python run.py --exp_path path
 
-drop out using --dropoutusing dynamic weight now
+drop out using --dropout
+using dynamic weight now
+mixup using --mixup
